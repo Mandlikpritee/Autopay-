@@ -1,5 +1,5 @@
 // src/pages/Reports.js
-import React from 'react';
+/* import React from 'react';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -41,4 +41,54 @@ const Reports = () => {
   );
 };
 
+export default Reports; */
+// src/pages/Reports.js
+// src/pages/Reports.js
+import React from 'react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable'; // ✅ Correct way to import
+import './Reports.css';
+
+const sampleData = [
+  { id: 1, name: 'John Doe', date: '2025-05-01', amount: 2000, status: 'Completed' },
+  { id: 2, name: 'Jane Smith', date: '2025-05-05', amount: 3000, status: 'Failed' },
+  { id: 3, name: 'Alice', date: '2025-05-07', amount: 1500, status: 'Scheduled' },
+];
+
+const Reports = () => {
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'PaymentHistory');
+    XLSX.writeFile(workbook, 'Payment_Report.xlsx');
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Payment Report', 14, 16);
+
+    // ✅ Use autoTable as a standalone function, pass doc as first arg
+    autoTable(doc, {
+      startY: 20,
+      head: [['ID', 'Name', 'Date', 'Amount', 'Status']],
+      body: sampleData.map(row => [row.id, row.name, row.date, row.amount, row.status]),
+    });
+
+    doc.save('Payment_Report.pdf');
+  };
+
+  return (
+    <div className="reports-container">
+      <h2 className="reports-title">Reports</h2>
+      <p className="report-info">Download your payment history in Excel or PDF format.</p>
+      <div className="reports-buttons">
+        <button className="report-btn" onClick={exportToExcel}>Export to Excel</button>
+        <button className="report-btn" onClick={exportToPDF}>Export to PDF</button>
+      </div>
+    </div>
+  );
+};
+
 export default Reports;
+
